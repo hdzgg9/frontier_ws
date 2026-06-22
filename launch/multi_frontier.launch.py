@@ -132,8 +132,8 @@ def generate_launch_description():
             parameters=[param_file, {
                 "use_sim_time": use_sim_time,
                 "robot_id": ns,
-                "map_topic": "/merge_map",
-                "map_frame": "world",
+                "map_topic": f"/{ns}/map",
+                "map_frame": f"{ns}/map",
                 "base_frame": f"{ns}/base_footprint",
                 "global_frame": "world"
             }],

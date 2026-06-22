@@ -34,9 +34,9 @@ options = {
   num_point_clouds = 0,
 
   lookup_transform_timeout_sec = 0.2,
-  submap_publish_period_sec = 0.3,
-  pose_publish_period_sec = 5e-3,
-  trajectory_publish_period_sec = 30e-3,
+  submap_publish_period_sec = 2.0,
+  pose_publish_period_sec = 50e-3,
+  trajectory_publish_period_sec = 200e-3,
   rangefinder_sampling_ratio = 1.,
   odometry_sampling_ratio = 1,
   fixed_frame_pose_sampling_ratio = 1.,
@@ -53,6 +53,7 @@ TRAJECTORY_BUILDER_2D.missing_data_ray_length = 3.
 TRAJECTORY_BUILDER_2D.use_imu_data = false
 TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = true
 TRAJECTORY_BUILDER_2D.motion_filter.max_angle_radians = math.rad(0.1)
+TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.1
 
 POSE_GRAPH.constraint_builder.min_score = 0.65
 POSE_GRAPH.constraint_builder.global_localization_min_score = 0.7

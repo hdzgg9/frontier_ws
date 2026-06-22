@@ -27,6 +27,7 @@
 #include <unordered_map>
 
 #include <std_msgs/msg/int64.hpp>
+#include <std_msgs/msg/bool.hpp>
 #include <unordered_set>
 #include <random>
 
@@ -71,6 +72,7 @@ private:
     bool isFrontierCell(int x, int y) const;
     std::vector<GridPose> detectFrontiers(const GridPose &robot_g) const;
     void applyKeepOpen(std::vector<uint8_t>& mask, const GridPose& robot_g) const;
+    void applyGoalKeepOpen(std::vector<uint8_t>& mask, const GridPose& goal_g) const;
     bool isFrontierTooCloseToObstacle(const GridPose& f,
                                     const std::vector<uint8_t>& obsRaw,
                                     int radius_cells) const;
@@ -127,7 +129,9 @@ private:
     void publishClusterRings(const std::vector<GridPose>& pts,
                          const std::vector<int>& labels,
                          const std::vector<GridPose>& representatives);
-    
+
+    void publishMapDelta();
+    void onGateGoal(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
     
     bool shouldReplanByIG();
 
@@ -243,9 +247,30 @@ private:
     double replan_check_period_s_ = 2.0;  
 
     rclcpp::Time goal_commit_start_{0,0,RCL_ROS_TIME};
-    double min_commit_time_s_ = 10.0;       
+    double min_commit_time_s_ = 3.0;       
 
     double ig_drop_thresh_ = 0.5;    
+
+    // ---- Gate 관련 ----
+    std::string gate_goal_topic_;
+    std::string map_delta_topic_;
+    double gate_timeout_s_{10.0};
+    double map_delta_period_s_{1.0};
+
+    rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr map_delta_pub_;
+    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr gate_goal_sub_;
+
+    geometry_msgs::msg::PoseStamped gate_goal_;
+    bool has_gate_goal_{false};
+    bool new_gate_goal_{false};
+    rclcpp::Time last_gate_goal_time_{0,0,RCL_ROS_TIME};
+    rclcpp::Time last_delta_pub_time_{0,0,RCL_ROS_TIME};
+
+    std::vector<int8_t> prev_map_data_; // delta 계산용 이전 맵
+
+    rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr explore_done_sub_;
+    bool exploration_done_{false};
+
 };
 
 #endif // FRONTIER_EXPLORER_MULTI_HPP_
